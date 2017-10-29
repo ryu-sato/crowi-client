@@ -1,0 +1,1 @@
+require 'crowi/plus/client'
