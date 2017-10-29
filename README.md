@@ -20,6 +20,15 @@ Or install it yourself as:
 
 ## Usage
 
+At first, you need to create setting file ```config/settings.yml``` in your application directory.
+And set token key of crowi-plus API, and URL of crowi-plus (ex. http://localhost:3000) in ```settings.yml```.
+
+```YAML
+# Example of settings.yml. YOU NEED TO REPLACE token!!!
+token: xEKAueUZDrQlr30iFZr96ti3GUd8sqP/pTkS3DGrwcc=
+url: http://localhost:3000/
+```
+
 ```ruby
 # pages list
 req = CPApiRequestPagesList.new path: '/'
