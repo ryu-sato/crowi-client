@@ -30,7 +30,7 @@ class CrowiClient
   # @param [String] path ページパス
   # @param [String] page_id ページID
   # @return [true/false] ページの存在
-  def page_exist?(path: path, page_id: page_id)
+  def page_exist?(path: nil, page_id: nil)
     req = CPApiRequestPagesGet.new path: path, page_id: page_id
     begin
       ret = JSON.parse request(req)
