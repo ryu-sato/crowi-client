@@ -4,13 +4,12 @@ require 'json'
 require 'yaml'
 require "easy_settings"
 
-require 'crowi/plus/client/apireq/api_request_pages'
-require 'crowi/plus/client/apireq/api_request_attachments'
+require 'crowi/client/apireq/api_request_pages'
+require 'crowi/client/apireq/api_request_attachments'
 
-# Crowi-Plus のクライアントクラス
-class CrowiPlusClient
+# Crowi のクライアントクラス
+class CrowiClient
   include Singleton
-  VERSION = '0.1'
 
   # コンストラクタ（シングルトン）
   def initialize

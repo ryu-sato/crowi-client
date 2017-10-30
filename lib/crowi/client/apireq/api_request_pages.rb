@@ -1,7 +1,7 @@
 require_relative 'api_request_base'
 
 # ページ一覧リクエスト用クラス
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/page.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/page.js
 class CPApiRequestPagesList < CPApiRequestBase
 
   # コンストラクタ
@@ -27,7 +27,7 @@ end
 
 
 # ページ取得リクエスト用クラス
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/page.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/page.js
 class CPApiRequestPagesGet < CPApiRequestBase
 
   # コンストラクタ
@@ -54,7 +54,7 @@ end
 
 
 # ページ作成リクエスト用クラス
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/page.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/page.js
 class CPApiRequestPagesCreate < CPApiRequestBase
 
   # コンストラクタ
@@ -79,7 +79,7 @@ protected
 end
 
 # ページ更新リクエスト用クラス
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/page.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/page.js
 class CPApiRequestPagesUpdate < CPApiRequestBase
 
   # コンストラクタ
@@ -105,7 +105,7 @@ protected
 end
 
 # ページ閲覧済マークを付与リクエスト用クラス
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/page.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/page.js
 # @note 詳細不明
 class CPApiRequestPagesSeen < CPApiRequestBase
 
@@ -130,7 +130,7 @@ protected
 end
 
 # ライクページ指定リクエスト用クラス
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/page.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/page.js
 class CPApiRequestLikesAdd < CPApiRequestBase
 
   # コンストラクタ
@@ -154,7 +154,7 @@ protected
 end
 
 # ライクページ指定解除リクエスト用クラス
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/page.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/page.js
 class CPApiRequestLikesRemove < CPApiRequestBase
 
   # コンストラクタ
@@ -178,7 +178,7 @@ protected
 end
 
 # 更新ページ一覧リクエスト用クラス
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/page.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/page.js
 # @note notification for 3rd party tool (like Slack)
 class CPApiRequestPagesUpdatePost < CPApiRequestBase
 
@@ -203,7 +203,7 @@ protected
 end
 
 # ページ削除リクエスト用クラス（API利用不可）
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/page.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/page.js
 class CPApiRequestPagesRemove < CPApiRequestBase
 
   # コンストラクタ

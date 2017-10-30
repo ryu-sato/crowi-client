@@ -1,17 +1,17 @@
 # coding: utf-8
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "crowi/plus/client/version"
+require "crowi/client/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "crowi-plus-client"
-  spec.version       = Crowi::Plus::Client::VERSION
+  spec.name          = "crowi-client"
+  spec.version       = Crowi::Client::VERSION
   spec.authors       = ["Ryu Sato"]
   spec.email         = ["tatsurou313@gmail.com"]
 
-  spec.summary       = %q{Client of crowi-plus}
-  spec.description   = %q{crowi-plus-client is client of crowi-plus with use API.}
-  spec.homepage      = "https://github.com/ryu-sato/crowi-plus-client"
+  spec.summary       = %q{Client of crowi}
+  spec.description   = %q{crowi-client is client of crowi with use API.}
+  spec.homepage      = "https://github.com/ryu-sato/crowi-client"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'

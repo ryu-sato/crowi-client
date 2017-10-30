@@ -1,7 +1,7 @@
 require_relative 'api_request_base'
 
 # 添付ファイル一覧リクエスト用クラス
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/attachment.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/attachment.js
 class CPApiRequestAttachmentsList < CPApiRequestBase
 
   # コンストラクタ
@@ -24,7 +24,7 @@ protected
 end
 
 # 添付ファイル追加リクエスト用クラス
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/attachment.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/attachment.js
 class CPApiRequestAttachmentsAdd < CPApiRequestBase
 
   # コンストラクタ
@@ -70,7 +70,7 @@ end
 
 
 # 添付ファイル削除リクエスト用クラス
-# @ref https://github.com/weseek/crowi-plus/blob/master/lib/routes/attachment.js
+# @ref https://github.com/crowi/crowi/blob/master/lib/routes/attachment.js
 class CPApiRequestAttachmentsRemove < CPApiRequestBase
 
   # コンストラクタ
