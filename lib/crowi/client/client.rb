@@ -34,7 +34,7 @@ class CrowiClient
     req = CPApiRequestPagesGet.new path: path, page_id: page_id
     begin
       ret = JSON.parse request(req)
-      return !!ret['page']['id']
+      return (ret['page'] && ret['page']['id'])
     rescue JSON::ParserError => e
       puts "ERROR is occured: #{e}"
       return false
