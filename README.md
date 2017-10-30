@@ -1,13 +1,13 @@
-# crowi-plus-client -- client of crowi-plus with use API
+# crowi-client -- client of crowi with use API
 
-A client of crowi-plus with use API.
+A client of crowi with use API.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'crowi-plus-client'
+gem 'crowi-client'
 ```
 
 And then execute:
@@ -16,12 +16,12 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install crowi-plus-client
+    $ gem install crowi-client
 
 ## Usage
 
 At first, you need to create setting file ```config/settings.yml``` in your application directory.
-And set token key of crowi-plus API, and URL of crowi-plus (ex. http://localhost:3000) in ```settings.yml```.
+And set token key of crowi API, and URL of crowi (ex. http://localhost:3000) in ```settings.yml```.
 
 ```YAML
 # Example of settings.yml. YOU NEED TO REPLACE token!!!
@@ -32,133 +32,133 @@ url: http://localhost:3000/
 ```ruby
 # pages list
 req = CPApiRequestPagesList.new path: '/'
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
 # pages get - path
 req = CPApiRequestPagesList.new path: '/'
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
 # pages get - page_id
 reqtmp = CPApiRequestPagesList.new path: '/'
-ret = JSON.parse(CrowiPlusClient.instance.request(reqtmp))
+ret = JSON.parse(CrowiClient.instance.request(reqtmp))
 page_id = ret['pages'][0]['_id']
 req = CPApiRequestPagesGet.new page_id: page_id
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
 # pages get - revision_id
 reqtmp = CPApiRequestPagesList.new path: '/'
-ret = JSON.parse(CrowiPlusClient.instance.request(reqtmp))
+ret = JSON.parse(CrowiClient.instance.request(reqtmp))
 path = ret['pages'][0]['path']
 revision_id = ret['pages'][0]['revision']['_id']
 req = CPApiRequestPagesGet.new path: path, revision_id: revision_id
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
 # pages create
-test_page_path = '/tmp/crowi-plus-client test page'
-body = "# crowi-plus-client\n"
+test_page_path = '/tmp/crowi-client test page'
+body = "# crowi-client\n"
 req = CPApiRequestPagesCreate.new path: test_page_path,
         body: body
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
 # pages update
-test_page_path = '/tmp/crowi-plus-client test page'
+test_page_path = '/tmp/crowi-client test page'
 GRANT_PUBLIC = 1
 GRANT_RESTRICTED = 2
 GRANT_SPECIFIED = 3
 GRANT_OWNER = 4
 test_cases = [nil, GRANT_PUBLIC, GRANT_RESTRICTED, GRANT_SPECIFIED, GRANT_OWNER]
 reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiPlusClient.instance.request(reqtmp))
+ret = JSON.parse(CrowiClient.instance.request(reqtmp))
 page_id = ret['pages'][0]['_id']
 
-body = "# crowi-plus-client\n"
+body = "# crowi-client\n"
 test_cases.each do |grant|
   body = body + grant.to_s
   req = CPApiRequestPagesUpdate.new page_id: page_id,
           body: body, grant: grant
-  puts CrowiPlusClient.instance.request(req)
+  puts CrowiClient.instance.request(req)
 end
 ```
 
 ```ruby
 # pages seen
 reqtmp = CPApiRequestPagesList.new path: '/'
-ret = JSON.parse(CrowiPlusClient.instance.request(reqtmp))
+ret = JSON.parse(CrowiClient.instance.request(reqtmp))
 page_id = ret['pages'][0]['_id']
 req = CPApiRequestPagesSeen.new page_id: page_id
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
 # likes add
-test_page_path = '/tmp/crowi-plus-client test page'
+test_page_path = '/tmp/crowi-client test page'
 reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiPlusClient.instance.request(reqtmp))
+ret = JSON.parse(CrowiClient.instance.request(reqtmp))
 page_id = ret['pages'][0]['_id']
 req = CPApiRequestLikesAdd.new page_id: page_id
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
 # likes remove
-test_page_path = '/tmp/crowi-plus-client test page'
+test_page_path = '/tmp/crowi-client test page'
 reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiPlusClient.instance.request(reqtmp))
+ret = JSON.parse(CrowiClient.instance.request(reqtmp))
 page_id = ret['pages'][0]['_id']
 req = CPApiRequestLikesRemove.new page_id: page_id
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
 # update post
-test_page_path = '/tmp/crowi-plus-client test page'
+test_page_path = '/tmp/crowi-client test page'
 req = CPApiRequestPagesUpdatePost.new path: test_page_path
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 
 ```ruby
 # attachments list
-test_page_path = '/tmp/crowi-plus-client test page'
+test_page_path = '/tmp/crowi-client test page'
 reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiPlusClient.instance.request(reqtmp))
+ret = JSON.parse(CrowiClient.instance.request(reqtmp))
 page_id = ret['pages'][0]['_id']
 req = CPApiRequestAttachmentsList.new page_id: page_id
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
 # attachments add
-test_page_path = '/tmp/crowi-plus-client test page'
+test_page_path = '/tmp/crowi-client test page'
 reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiPlusClient.instance.request(reqtmp))
+ret = JSON.parse(CrowiClient.instance.request(reqtmp))
 page_id = ret['pages'][0]['_id']
 req = CPApiRequestAttachmentsAdd.new page_id: page_id,
                                      file: File.new('LICENSE.txt')
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
 # attachments remove
-test_page_path = '/tmp/crowi-plus-client test page'
+test_page_path = '/tmp/crowi-client test page'
 reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiPlusClient.instance.request(reqtmp))
+ret = JSON.parse(CrowiClient.instance.request(reqtmp))
 page_id = ret['pages'][0]['_id']
 reqtmp = CPApiRequestAttachmentsList.new page_id: page_id
-ret = JSON.parse(CrowiPlusClient.instance.request(reqtmp))
+ret = JSON.parse(CrowiClient.instance.request(reqtmp))
 attachment_id = ret['attachments'][0]['_id']
 req = CPApiRequestAttachmentsRemove.new attachment_id: attachment_id
-puts CrowiPlusClient.instance.request(req)
+puts CrowiClient.instance.request(req)
 ```
 
 ## Development
@@ -169,7 +169,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/ryu-sato/crowi-plus-client. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/ryu-sato/crowi-client. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -177,4 +177,4 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Code of Conduct
 
-Everyone interacting in the Crowi::Plus::Client project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/ryu-sato/crowi-plus-client/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Crowi::Client project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/ryu-sato/crowi-client/blob/master/CODE_OF_CONDUCT.md).
