@@ -128,4 +128,8 @@ RSpec.describe Crowi::Client do
     expect(CrowiClient.instance.request(req)).to be_json_including(apiok)
   end
 
+  it "page existence" do
+    expect(CrowiClient.instance.page_exist?( path: '/' )).to eql(true)
+  end
+
 end
