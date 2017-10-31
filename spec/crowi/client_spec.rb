@@ -99,9 +99,9 @@ RSpec.describe Crowi::Client do
 
   it "attachments list" do
     test_page_path = '/tmp/crowi-client test page'
-    reqtmp = CPApiRequestPagesList.new path: test_page_path
+    reqtmp = CPApiRequestPagesGet.new path: test_page_path
     ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-    page_id = ret['pages'][0]['_id']
+    page_id = ret['page']['id']
     req = CPApiRequestAttachmentsList.new page_id: page_id
     expect(CrowiClient.instance.request(req)).to be_json_including(apiok)
   end
@@ -114,6 +114,11 @@ RSpec.describe Crowi::Client do
     req = CPApiRequestAttachmentsAdd.new page_id: page_id,
                                          file: File.new('LICENSE.txt')
     expect(CrowiClient.instance.request(req)).to be_json_including(apiok)
+  end
+
+  it "attachment existence" do
+    test_page_path = '/tmp/crowi-client test page'
+    expect(CrowiClient.instance.attachment_exist?( path: test_page_path, attachment_name: 'LICENSE.txt' )).to eql(true)
   end
 
   it "attachments remove" do
@@ -131,5 +136,4 @@ RSpec.describe Crowi::Client do
   it "page existence" do
     expect(CrowiClient.instance.page_exist?( path: '/' )).to eql(true)
   end
-
 end
