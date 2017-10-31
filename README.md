@@ -24,9 +24,29 @@ At first, you need to create setting file ```config/settings.yml``` in your appl
 And set token key of crowi API, and URL of crowi (ex. http://localhost:3000) in ```settings.yml```.
 
 ```YAML
-# Example of settings.yml. YOU NEED TO REPLACE token!!!
+# Example of config/settings.yml. YOU NEED TO REPLACE token!!!
 token: xEKAueUZDrQlr30iFZr96ti3GUd8sqP/pTkS3DGrwcc=
 url: http://localhost:3000/
+```
+
+Then, you can use crowi client with ```require 'crowi-client'```.
+
+```ruby
+require 'crowi-client'
+CrowiClient.instance.page_exist?( path: '/' )
+CrowiClient.instance.attachment_exist?( path: '/', attachment_name: 'LICENSE.txt' )
+```
+
+## Examples
+
+```ruby
+# Check existence of page by page path
+CrowiClient.instance.page_exist?( path: '/' )
+```
+
+```ruby
+# Check existence of attachment by file name of attachment
+CrowiClient.instance.attachment_exist?( path: '/', attachment_name: 'LICENSE.txt' )
 ```
 
 ```ruby
