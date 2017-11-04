@@ -1,4 +1,5 @@
 require_relative 'api_request_base'
+require 'crowi/client/model/crowi_page'
 
 # ページ一覧リクエスト用クラス
 # @ref https://github.com/crowi/crowi/blob/master/lib/routes/page.js
@@ -10,6 +11,25 @@ class CPApiRequestPagesList < CPApiRequestBase
   def initialize(param = {})
     super('/_api/pages.list', METHOD_GET,
           { path: param[:path], user: param[:user] })
+  end
+
+  # リクエストを実行する
+  # @override
+  # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @return [Array] リクエスト実行結果
+  def execute(entry_point)
+    if invalid?
+      return validation_msg
+    end
+    ret = JSON.parse RestClient.get entry_point, params: @param
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    pages = []
+    ret['pages'].each do |page|
+      pages.push(CrowiPage.new(page))
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: pages)
   end
 
 protected
@@ -39,6 +59,21 @@ class CPApiRequestPagesGet < CPApiRequestBase
             path: param[:path], revision_id: param[:revision_id] })
   end
 
+  # リクエストを実行する
+  # @override
+  # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @return [CrowiPage] リクエスト実行結果
+  def execute(entry_point)
+    if invalid?
+      return validation_msg
+    end
+    ret = JSON.parse RestClient.get entry_point, params: @param
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: CrowiPage.new(ret['page']))
+  end
+
 protected
 
   # バリデーションエラーを取得する
@@ -63,6 +98,22 @@ class CPApiRequestPagesCreate < CPApiRequestBase
   def initialize(param = {})
     super('/_api/pages.create', METHOD_POST,
           { body: param[:body], path: param[:path], grant: param[:grant] })
+  end
+
+  # リクエストを実行する
+  # @override
+  # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @return [CrowiPage] リクエスト実行結果
+  def execute(entry_point)
+    if invalid?
+      return validation_msg
+    end
+    ret = JSON.parse RestClient.post entry_point, @param.to_json,
+                          { content_type: :json, accept: :json }
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: CrowiPage.new(ret['page']))
   end
 
 protected
@@ -91,6 +142,22 @@ class CPApiRequestPagesUpdate < CPApiRequestBase
             revision_id: param[:revision_id], grant: param[:grant] })
   end
 
+  # リクエストを実行する
+  # @override
+  # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @return [CrowiPage] リクエスト実行結果
+  def execute(entry_point)
+    if invalid?
+      return validation_msg
+    end
+    ret = JSON.parse RestClient.post entry_point, @param.to_json,
+                          { content_type: :json, accept: :json }
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: CrowiPage.new(ret['page']))
+  end
+
 protected
 
   # バリデーションエラーを取得する
@@ -114,6 +181,22 @@ class CPApiRequestPagesSeen < CPApiRequestBase
   # @param [Hash] param APIリクエストのパラメータ
   def initialize(param = {})
     super('/_api/pages.seen', METHOD_POST, { page_id: param[:page_id] })
+  end
+
+  # リクエストを実行する
+  # @override
+  # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @return [CrowiPage] リクエスト実行結果
+  def execute(entry_point)
+    if invalid?
+      return validation_msg
+    end
+    ret = JSON.parse RestClient.post entry_point, @param.to_json,
+                          { content_type: :json, accept: :json }
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: CrowiPage.new(ret['seenUser']))
   end
 
 protected
@@ -140,6 +223,22 @@ class CPApiRequestLikesAdd < CPApiRequestBase
     super('/_api/likes.add', METHOD_POST, { page_id: param[:page_id] })
   end
 
+  # リクエストを実行する
+  # @override
+  # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @return [CrowiPage] リクエスト実行結果
+  def execute(entry_point)
+    if invalid?
+      return validation_msg
+    end
+    ret = JSON.parse RestClient.post entry_point, @param.to_json,
+                          { content_type: :json, accept: :json }
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: CrowiPage.new(ret['page']))
+  end
+
 protected
 
   # バリデーションエラーを取得する
@@ -162,6 +261,22 @@ class CPApiRequestLikesRemove < CPApiRequestBase
   # @param [Hash] param APIリクエストのパラメータ
   def initialize(param = {})
     super('/_api/likes.remove', METHOD_POST, { page_id: param[:page_id] })
+  end
+
+  # リクエストを実行する
+  # @override
+  # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @return [CrowiPage] リクエスト実行結果
+  def execute(entry_point)
+    if invalid?
+      return validation_msg
+    end
+    ret = JSON.parse RestClient.post entry_point, @param.to_json,
+                          { content_type: :json, accept: :json }
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: CrowiPage.new(ret['page']))
   end
 
 protected
@@ -189,6 +304,25 @@ class CPApiRequestPagesUpdatePost < CPApiRequestBase
     super('/_api/pages.updatePost', METHOD_GET, { path: param[:path] })
   end
 
+  # リクエストを実行する
+  # @override
+  # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @return [CrowiPage] リクエスト実行結果
+  def execute(entry_point)
+    if invalid?
+      return validation_msg
+    end
+    ret = JSON.parse RestClient.get entry_point, params: @param
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    posts = []
+    ret['updatePost'].each do |post|
+      pages.push(CrowiPage.new(post))
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: posts)
+  end
+
 protected
 
   # バリデーションエラーを取得する
@@ -213,6 +347,21 @@ class CPApiRequestPagesRemove < CPApiRequestBase
     raise Exception, 'API of pages.remove is forbidden'
     super('/_api/pages.remove', METHOD_GET,
           { page_id: param[:page_id], revision_id: param[:revision_id] })
+  end
+
+  # リクエストを実行する
+  # @override
+  # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @return [CrowiPage] リクエスト実行結果
+  def execute(entry_point)
+    if invalid?
+      return validation_msg
+    end
+    ret = JSON.parse RestClient.get entry_point, params: @param
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: CrowiPage.new(ret['page']))
   end
 
 protected

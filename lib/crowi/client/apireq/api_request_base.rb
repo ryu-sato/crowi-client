@@ -9,9 +9,27 @@ class CPInvalidRequest
     @msg = msg
   end
 
+  # Convert string
+  # @return [String] Message
   def to_s
     return @msg
   end
+end
+
+# APIリクエストの応答基本クラス
+class CPApiReturn
+  attr_accessor :ok, :data
+
+  # Constractor
+  # @param [String] ok Result of API
+  def initialize(params = {})
+    if (! params[:ok].is_a?(TrueClass) && ! params[:ok].is_a?(FalseClass))
+      raise ArgumentError.new('Parameter ok is needed true or false.')
+    end
+    @ok = params[:ok]
+    @data = params[:data]
+  end
+
 end
 
 # APIリクエストの基本クラス
@@ -42,6 +60,12 @@ class CPApiRequestBase
     return (!_invalid)
   end
 
+  # パラメータのバリデーションチェックを行う
+  # @return [true/false] バリデーションチェック結果
+  def invalid?
+    return (_invalid)
+  end
+
   # バリデーションエラーの説明
   # @return [String] バリデーションエラーの説明
   def validation_msg
@@ -52,18 +76,19 @@ class CPApiRequestBase
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
   # @return [String] リクエスト実行結果（JSON形式）
   def execute(entry_point)
-    RestClient.log = 'stdout'
-    if ! valid?
+
+    if invalid?
       return validation_msg
     end
 
     case @method
     when 'GET'
-      return RestClient.get entry_point, params: @param
+      ret = RestClient.get entry_point, params: @param
     when 'POST'
-      return RestClient.post entry_point, @param.to_json,
-                             { content_type: :json, accept: :json }
+      ret = RestClient.post entry_point, @param.to_json,
+                            { content_type: :json, accept: :json }
     end
+    return CPApiReturnBase.new(ret)
   end
 
 protected
