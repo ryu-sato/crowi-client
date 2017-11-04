@@ -26,19 +26,22 @@ class CrowiClient
     return req.execute URI.join(@cp_entry_point, req.entry_point).to_s
   end
 
+  # ページIDを取得する
+  def page_id(params = {})
+    if (params[:path] == nil)
+      return CPInvalidRequest.new "Parameter path is required."
+    end
+    ret = request(CPApiRequestPagesList.new path: params[:path])
+    return ret.data[0].id
+  end
+
   # ページが存在するか調べる
   # @param [String] path ページパス
   # @param [String] page_id ページID
   # @return [true/false] ページの存在
   def page_exist?(path: nil, page_id: nil)
-    begin
-      req = CPApiRequestPagesGet.new path: path, page_id: page_id
-      ret = JSON.parse request(req)
-      return (!!ret['page'] && !!ret['page']['id'])
-    rescue JSON::ParserError => e
-      puts "ERROR is occured: #{e}"
-      return false
-    end
+    ret = request(CPApiRequestPagesGet.new path: path, page_id: page_id)
+    return ret.ok
   end
 
   # ページに添付ファイルが存在するか調べる
@@ -47,14 +50,11 @@ class CrowiClient
   # @return [true/false] 添付ファイルの存在
   def attachment_exist?(path: nil, attachment_name: nil)
     begin
-      reqtmp = CPApiRequestPagesGet.new path: path
-      ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-      page_id = ret['page']['id']
-      req = CPApiRequestAttachmentsList.new page_id: page_id
-      ret = JSON.parse request(req)
-      return false unless ret['attachments']
-      ret['attachments'].each do |attachment|
-        if (attachment['originalName'] === attachment_name)
+      page_id = page_id(path: path)
+      ret = request(CPApiRequestAttachmentsList.new page_id: page_id)
+      return false unless ret.ok
+      ret.data.each do |attachment|
+        if (attachment.originalName === attachment_name)
           return true
         end
       end
@@ -63,6 +63,21 @@ class CrowiClient
       puts "ERROR is occured: #{e}"
       return false
     end
+  end
+
+  # ページから添付ファイルのIDを取得する
+  # @param [String] path ページパス
+  # @return [String] attachment's ID
+  def attachment_id(path: nil, attachment_name: nil)
+      page_id = page_id(path: path)
+      ret = request(CPApiRequestAttachmentsList.new page_id: page_id)
+      return false unless ret.ok
+      ret.data.each do |attachment|
+        if (attachment.originalName === attachment_name)
+          return attachment._id
+        end
+      end
+      return nil
   end
 end
 

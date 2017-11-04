@@ -11,6 +11,25 @@ class CPApiRequestAttachmentsList < CPApiRequestBase
     super('/_api/attachments.list', METHOD_GET, { page_id: param[:page_id] })
   end
 
+  # リクエストを実行する
+  # @override
+  # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @return [CrowiPage] リクエスト実行結果
+  def execute(entry_point)
+    if invalid?
+      return validation_msg
+    end
+    ret = JSON.parse RestClient.get entry_point, params: @param
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    attachments = []
+    ret['attachments'].each do |attachment|
+      attachments.push(CrowiAttachment.new(attachment))
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: attachments)
+  end
+
 protected
 
   # バリデーションエラーを取得する
@@ -40,7 +59,7 @@ class CPApiRequestAttachmentsAdd < CPApiRequestBase
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
   # @return [String] リクエスト実行結果（JSON形式）
   def execute(entry_point)
-    if ! valid?
+    if invalid?
       return validation_msg
     end
     req = RestClient::Request.new(
@@ -52,9 +71,12 @@ class CPApiRequestAttachmentsAdd < CPApiRequestBase
         file:         @param[:file]
       }
     )
-    return req.execute
+    ret = JSON.parse req.execute
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: CrowiPage.new(ret['page']))
   end
-
 
 protected
 
@@ -79,6 +101,23 @@ class CPApiRequestAttachmentsRemove < CPApiRequestBase
   def initialize(param = {})
     super('/_api/attachments.remove', METHOD_POST,
           { attachment_id: param[:attachment_id] })
+  end
+
+
+  # リクエストを実行する
+  # @override
+  # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @return [CrowiPage] リクエスト実行結果
+  def execute(entry_point)
+    if invalid?
+      return validation_msg
+    end
+    ret = JSON.parse RestClient.post entry_point, @param.to_json,
+                          { content_type: :json, accept: :json }
+    if (ret['ok'] == false)
+      return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
+    end
+    return CPApiReturn.new(ok: ret['ok'], data: nil)
   end
 
 protected
