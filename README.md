@@ -63,19 +63,16 @@ puts CrowiClient.instance.request(req)
 
 ```ruby
 # pages get - page_id
-reqtmp = CPApiRequestPagesList.new path: '/'
-ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-page_id = ret['pages'][0]['_id']
-req = CPApiRequestPagesGet.new page_id: page_id
+req = CPApiRequestPagesGet.new page_id: CrowiClient.instance.page_id(path: '/')
 puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
 # pages get - revision_id
 reqtmp = CPApiRequestPagesList.new path: '/'
-ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-path = ret['pages'][0]['path']
-revision_id = ret['pages'][0]['revision']['_id']
+ret = CrowiClient.instance.request(reqtmp)
+path = ret.data[0].path
+revision_id = ret.data[0].revision._id
 req = CPApiRequestPagesGet.new path: path, revision_id: revision_id
 puts CrowiClient.instance.request(req)
 ```
@@ -92,14 +89,9 @@ puts CrowiClient.instance.request(req)
 ```ruby
 # pages update
 test_page_path = '/tmp/crowi-client test page'
-GRANT_PUBLIC = 1
-GRANT_RESTRICTED = 2
-GRANT_SPECIFIED = 3
-GRANT_OWNER = 4
-test_cases = [nil, GRANT_PUBLIC, GRANT_RESTRICTED, GRANT_SPECIFIED, GRANT_OWNER]
-reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-page_id = ret['pages'][0]['_id']
+test_cases = [nil, CrowiPage::GRANT_PUBLIC, CrowiPage::GRANT_RESTRICTED,
+              CrowiPage::GRANT_SPECIFIED, CrowiPage::GRANT_OWNER]
+page_id = CrowiClient.instance.page_id(path: test_page_path)
 
 body = "# crowi-client\n"
 test_cases.each do |grant|
@@ -112,9 +104,7 @@ end
 
 ```ruby
 # pages seen
-reqtmp = CPApiRequestPagesList.new path: '/'
-ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-page_id = ret['pages'][0]['_id']
+page_id = CrowiClient.instance.page_id(path: '/')
 req = CPApiRequestPagesSeen.new page_id: page_id
 puts CrowiClient.instance.request(req)
 ```
@@ -122,9 +112,7 @@ puts CrowiClient.instance.request(req)
 ```ruby
 # likes add
 test_page_path = '/tmp/crowi-client test page'
-reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-page_id = ret['pages'][0]['_id']
+page_id = CrowiClient.instance.page_id(path: test_page_path)
 req = CPApiRequestLikesAdd.new page_id: page_id
 puts CrowiClient.instance.request(req)
 ```
@@ -132,9 +120,7 @@ puts CrowiClient.instance.request(req)
 ```ruby
 # likes remove
 test_page_path = '/tmp/crowi-client test page'
-reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-page_id = ret['pages'][0]['_id']
+page_id = CrowiClient.instance.page_id(path: test_page_path)
 req = CPApiRequestLikesRemove.new page_id: page_id
 puts CrowiClient.instance.request(req)
 ```
@@ -150,9 +136,7 @@ puts CrowiClient.instance.request(req)
 ```ruby
 # attachments list
 test_page_path = '/tmp/crowi-client test page'
-reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-page_id = ret['pages'][0]['_id']
+page_id = CrowiClient.instance.page_id(path: test_page_path)
 req = CPApiRequestAttachmentsList.new page_id: page_id
 puts CrowiClient.instance.request(req)
 ```
@@ -160,9 +144,7 @@ puts CrowiClient.instance.request(req)
 ```ruby
 # attachments add
 test_page_path = '/tmp/crowi-client test page'
-reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-page_id = ret['pages'][0]['_id']
+page_id = CrowiClient.instance.page_id(path: test_page_path)
 req = CPApiRequestAttachmentsAdd.new page_id: page_id,
                                      file: File.new('LICENSE.txt')
 puts CrowiClient.instance.request(req)
@@ -171,12 +153,10 @@ puts CrowiClient.instance.request(req)
 ```ruby
 # attachments remove
 test_page_path = '/tmp/crowi-client test page'
-reqtmp = CPApiRequestPagesList.new path: test_page_path
-ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-page_id = ret['pages'][0]['_id']
+page_id = CrowiClient.instance.page_id(path: test_page_path)
 reqtmp = CPApiRequestAttachmentsList.new page_id: page_id
-ret = JSON.parse(CrowiClient.instance.request(reqtmp))
-attachment_id = ret['attachments'][0]['_id']
+ret = CrowiClient.instance.request(reqtmp)
+attachment_id = ret.data[0]._id
 req = CPApiRequestAttachmentsRemove.new attachment_id: attachment_id
 puts CrowiClient.instance.request(req)
 ```
