@@ -37,11 +37,10 @@ class CrowiClient
 
   # ページが存在するか調べる
   # @param [String] path ページパス
-  # @param [String] page_id ページID
   # @return [true/false] ページの存在
-  def page_exist?(path: nil, page_id: nil)
-    ret = request(CPApiRequestPagesGet.new path: path, page_id: page_id)
-    return ret.ok
+  def page_exist?(path: nil)
+    ret = request(CPApiRequestPagesList.new path: path)
+    return ret&.ok && ret&.data&.find { |page| page.path == path } != nil
   end
 
   # ページに添付ファイルが存在するか調べる
