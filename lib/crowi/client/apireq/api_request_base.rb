@@ -74,7 +74,7 @@ class CPApiRequestBase
 
   # リクエストを実行する
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
-  # @return [String] リクエスト実行結果（JSON形式）
+  # @return [String] リクエスト実行結果（CPApiReturnオブジェクト）
   def execute(entry_point)
 
     if invalid?
@@ -83,12 +83,13 @@ class CPApiRequestBase
 
     case @method
     when 'GET'
-      ret = RestClient.get entry_point, params: @param
+      ret_json = RestClient.get entry_point, params: @param
     when 'POST'
-      ret = RestClient.post entry_point, @param.to_json,
-                            { content_type: :json, accept: :json }
+      ret_json = RestClient.post entry_point, @param.to_json,
+                                 { content_type: :json, accept: :json }
     end
-    return CPApiReturnBase.new(ret)
+    ret = JSON.parse(ret_json)
+    return CPApiReturn.new(ok: ret['ok'], data: ret.reject { |k,v| k == 'ok' })
   end
 
 protected

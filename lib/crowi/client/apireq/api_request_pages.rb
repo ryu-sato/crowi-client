@@ -10,7 +10,7 @@ class CPApiRequestPagesList < CPApiRequestBase
   # @param [Hash] param APIリクエストのパラメータ
   def initialize(param = {})
     super('/_api/pages.list', METHOD_GET,
-          { path: param[:path], user: param[:user] })
+          { path: param[:path_exp], user: param[:user] })
   end
 
   # リクエストを実行する
@@ -18,10 +18,14 @@ class CPApiRequestPagesList < CPApiRequestBase
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
   # @return [Array] リクエスト実行結果
   def execute(entry_point)
+
     if invalid?
       return validation_msg
     end
+
     ret = JSON.parse RestClient.get entry_point, params: @param
+#RestClient.log = 'stdout'
+#puts '##### PagesList', ret, param
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
     end
@@ -64,6 +68,7 @@ class CPApiRequestPagesGet < CPApiRequestBase
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
   # @return [CrowiPage] リクエスト実行結果
   def execute(entry_point)
+
     if invalid?
       return validation_msg
     end
@@ -105,6 +110,7 @@ class CPApiRequestPagesCreate < CPApiRequestBase
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
   # @return [CrowiPage] リクエスト実行結果
   def execute(entry_point)
+
     if invalid?
       return validation_msg
     end
@@ -147,6 +153,7 @@ class CPApiRequestPagesUpdate < CPApiRequestBase
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
   # @return [CrowiPage] リクエスト実行結果
   def execute(entry_point)
+
     if invalid?
       return validation_msg
     end
@@ -188,6 +195,7 @@ class CPApiRequestPagesSeen < CPApiRequestBase
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
   # @return [CrowiPage] リクエスト実行結果
   def execute(entry_point)
+
     if invalid?
       return validation_msg
     end
@@ -228,6 +236,7 @@ class CPApiRequestLikesAdd < CPApiRequestBase
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
   # @return [CrowiPage] リクエスト実行結果
   def execute(entry_point)
+
     if invalid?
       return validation_msg
     end
@@ -268,6 +277,7 @@ class CPApiRequestLikesRemove < CPApiRequestBase
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
   # @return [CrowiPage] リクエスト実行結果
   def execute(entry_point)
+
     if invalid?
       return validation_msg
     end
@@ -309,6 +319,7 @@ class CPApiRequestPagesUpdatePost < CPApiRequestBase
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
   # @return [CrowiPage] リクエスト実行結果
   def execute(entry_point)
+
     if invalid?
       return validation_msg
     end
@@ -354,6 +365,7 @@ class CPApiRequestPagesRemove < CPApiRequestBase
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
   # @return [CrowiPage] リクエスト実行結果
   def execute(entry_point)
+
     if invalid?
       return validation_msg
     end
