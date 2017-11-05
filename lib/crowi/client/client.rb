@@ -39,7 +39,6 @@ class CrowiClient
   # @return [true/false] ページの存在
   def page_exist?(path_exp: nil)
     ret = request(CPApiRequestPagesList.new path_exp: path_exp)
-#puts ret
     return ret&.ok && ret&.data&.find { |p| p.path.match(path_exp) } != nil
   end
 

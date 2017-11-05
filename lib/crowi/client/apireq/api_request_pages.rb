@@ -24,8 +24,6 @@ class CPApiRequestPagesList < CPApiRequestBase
     end
 
     ret = JSON.parse RestClient.get entry_point, params: @param
-#RestClient.log = 'stdout'
-#puts '##### PagesList', ret, param
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
     end
