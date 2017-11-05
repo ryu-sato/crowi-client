@@ -115,5 +115,6 @@ RSpec.describe Crowi::Client do
 
   it "page existence" do
     expect(CrowiClient.instance.page_exist?( path: '/' )).to eql(true)
+    expect(CrowiClient.instance.page_exist?( path: '/tmp/#####FAKE_PAGE#####' )).to eql(false)
   end
 end
