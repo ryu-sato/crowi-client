@@ -27,44 +27,44 @@ class CrowiClient
   end
 
   # ページIDを取得する
-  def page_id(params = {})
-    if (params[:path] == nil)
-      return CPInvalidRequest.new "Parameter path is required."
-    end
-    ret = request(CPApiRequestPagesList.new path: params[:path])
-    return ret.data[0].id
+  # @param [String] path_exp ページパス
+  # @return [String] ページID
+  def page_id(path_exp: nil)
+    ret = request(CPApiRequestPagesList.new path_exp: path_exp)
+    return ret&.data&.find { |p| p.path.match(path_exp) != nil }&.id
   end
 
   # ページが存在するか調べる
   # @param [String] path ページパス
   # @return [true/false] ページの存在
-  def page_exist?(path: nil)
-    ret = request(CPApiRequestPagesList.new path: path)
-    return ret&.ok && ret&.data&.find { |page| page.path == path } != nil
+  def page_exist?(path_exp: nil)
+    ret = request(CPApiRequestPagesList.new path_exp: path_exp)
+#puts ret
+    return ret&.ok && ret&.data&.find { |p| p.path.match(path_exp) } != nil
   end
 
   # ページに添付ファイルが存在するか調べる
-  # @param [String] page_id ページID
+  # @param [String] path_exp ページパス（正規表現）
   # @param [String] attachment_name 添付ファイル名
   # @return [true/false] 添付ファイルの存在
-  def attachment_exist?(path: nil, attachment_name: nil)
-    ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path: path))
+  def attachment_exist?(path_exp: nil, attachment_name: nil)
+    ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path_exp: path_exp))
     return ret&.ok && ret&.data&.find { |a| a.originalName == attachment_name } != nil
   end
 
   # 指定した添付ファイルのIDを取得する
-  # @param  [String] path page's path
+  # @param  [String] path_exp ページパス（正規表現）
   # @return [String] attachment's file name
-  def attachment_id(path: nil, attachment_name: nil)
-      ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path: path))
+  def attachment_id(path_exp: nil, attachment_name: nil)
+      ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path_exp: path_exp))
       return ret&.data&.find { |a| a.originalName == attachment_name }&._id
   end
 
   # 指定した添付ファイル情報を取得する
-  # @param  [String] path page's path
+  # @param  [String] path_exp ページパス（正規表現）
   # @return [String] attachment's file name
-  def attachment(path: nil, attachment_name: nil)
-      ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path: path))
+  def attachment(path_exp: nil, attachment_name: nil)
+      ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path_exp: path_exp))
       return ret&.data&.find { |a| a.originalName == attachment_name }
   end
 
