@@ -48,35 +48,25 @@ class CrowiClient
   # @param [String] attachment_name 添付ファイル名
   # @return [true/false] 添付ファイルの存在
   def attachment_exist?(path: nil, attachment_name: nil)
-    begin
-      page_id = page_id(path: path)
-      ret = request(CPApiRequestAttachmentsList.new page_id: page_id)
-      return false unless ret.ok
-      ret.data.each do |attachment|
-        if (attachment.originalName === attachment_name)
-          return true
-        end
-      end
-      return false
-    rescue JSON::ParserError => e
-      puts "ERROR is occured: #{e}"
-      return false
-    end
+    ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path: path))
+    return ret&.ok && ret&.data&.find { |a| a.originalName == attachment_name } != nil
   end
 
-  # ページから添付ファイルのIDを取得する
-  # @param [String] path ページパス
-  # @return [String] attachment's ID
+  # 指定した添付ファイルのIDを取得する
+  # @param  [String] path page's path
+  # @return [String] attachment's file name
   def attachment_id(path: nil, attachment_name: nil)
-      page_id = page_id(path: path)
-      ret = request(CPApiRequestAttachmentsList.new page_id: page_id)
-      return false unless ret.ok
-      ret.data.each do |attachment|
-        if (attachment.originalName === attachment_name)
-          return attachment._id
-        end
-      end
-      return nil
+      ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path: path))
+      return ret&.data&.find { |a| a.originalName == attachment_name }&._id
   end
+
+  # 指定した添付ファイル情報を取得する
+  # @param  [String] path page's path
+  # @return [String] attachment's file name
+  def attachment(path: nil, attachment_name: nil)
+      ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path: path))
+      return ret&.data&.find { |a| a.originalName == attachment_name }
+  end
+
 end
 
