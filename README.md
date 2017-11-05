@@ -50,6 +50,11 @@ CrowiClient.instance.attachment_exist?( path: '/', attachment_name: 'LICENSE.txt
 ```
 
 ```ruby
+# get attachment (return data is object of CrowiAttachment)
+puts CrowiClient.instance.attachment( path: '/', attachment_name: 'LICENSE.txt' )
+```
+
+```ruby
 # pages list
 req = CPApiRequestPagesList.new path: '/'
 puts CrowiClient.instance.request(req)
