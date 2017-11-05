@@ -33,36 +33,46 @@ Then, you can use crowi client with ```require 'crowi-client'```.
 
 ```ruby
 require 'crowi-client'
-CrowiClient.instance.page_exist?( path: '/' )
-CrowiClient.instance.attachment_exist?( path: '/', attachment_name: 'LICENSE.txt' )
+puts CrowiClient.instance.page_exist?( path_exp: '/' )
+puts CrowiClient.instance.attachment_exist?( path_exp: '/', attachment_name: 'LICENSE.txt' )
 ```
 
 ## Examples
 
 ```ruby
-# Check existence of page by page path
-CrowiClient.instance.page_exist?( path: '/' )
+# get page's ID
+puts CrowiClient.instance.page_id( path_exp: '/' )
+```
+
+```ruby
+# Check existence of page by page path (you can use regular expression)
+CrowiClient.instance.page_exist?( path_exp: '/' )
 ```
 
 ```ruby
 # Check existence of attachment by file name of attachment
-CrowiClient.instance.attachment_exist?( path: '/', attachment_name: 'LICENSE.txt' )
+CrowiClient.instance.attachment_exist?( path_exp: '/', attachment_name: 'LICENSE.txt' )
+```
+
+```ruby
+# get attachment's ID
+puts CrowiClient.instance.attachment_id( path_exp: '/', attachment_name: 'LICENSE.txt' )
 ```
 
 ```ruby
 # get attachment (return data is object of CrowiAttachment)
-puts CrowiClient.instance.attachment( path: '/', attachment_name: 'LICENSE.txt' )
+puts CrowiClient.instance.attachment( path_exp: '/', attachment_name: 'LICENSE.txt' )
 ```
 
 ```ruby
 # pages list
-req = CPApiRequestPagesList.new path: '/'
+req = CPApiRequestPagesList.new path_exp: '/'
 puts CrowiClient.instance.request(req)
 ```
 
 ```ruby
-# pages get - path
-req = CPApiRequestPagesList.new path: '/'
+# pages get - path_exp
+req = CPApiRequestPagesList.new path_exp: '/'
 puts CrowiClient.instance.request(req)
 ```
 
@@ -74,7 +84,7 @@ puts CrowiClient.instance.request(req)
 
 ```ruby
 # pages get - revision_id
-reqtmp = CPApiRequestPagesList.new path: '/'
+reqtmp = CPApiRequestPagesList.new path_exp: '/'
 ret = CrowiClient.instance.request(reqtmp)
 path = ret.data[0].path
 revision_id = ret.data[0].revision._id
