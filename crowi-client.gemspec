@@ -34,7 +34,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec-json_matcher", "~> 0.1"
-  spec.add_development_dependency "rest-client", "~> 2.0"
-  spec.add_development_dependency "json", "~> 2.1"
-  spec.add_development_dependency "easy_settings", "~> 0.1"
+
+  spec.add_dependency "rest-client", "~> 2.0"
+  spec.add_dependency "json", "~> 2.1"
+  spec.add_dependency "easy_settings", "~> 0.1"
 end
