@@ -4,7 +4,7 @@ RSpec.describe Crowi::Client do
 
   # Page path for test
   # @note Test page is not removed after test because removing page is not permitted throw API.
-  let(:test_page_path) { '/tmp/crowi-client test page'  }
+  let(:test_page_path) { '/tmp/crowi-client テストページ'  }
   let(:crowi_client)   { CrowiClient.new(crowi_url: ENV['CROWI_URL'],
                                          access_token: ENV['CROWI_ACCESS_TOKEN']) }
 
@@ -67,7 +67,7 @@ RSpec.describe Crowi::Client do
   
     # Test for function to get the page list, which is seen
     it "get seen pages" do
-      page_id = crowi_client.page_id(path_exp: '/')
+      page_id = crowi_client.page_id(path_exp: test_page_path)
       req = CPApiRequestPagesSeen.new page_id: page_id
       expect(crowi_client.request(req).ok).to eq true
     end
@@ -97,13 +97,17 @@ RSpec.describe Crowi::Client do
     #       (ex. path '/' is not promises existence, and path '/tmp/#####FAKE_PATH#####' is also)
     it "check page existence" do
       aggregate_failures 'exist page, and not exist page' do
-        expect(crowi_client.page_exist?( path_exp: '/' )).to eql(true)
+        expect(crowi_client.page_exist?( path_exp: test_page_path )).to eql(true)
         expect(crowi_client.page_exist?( path_exp: '/tmp/#####FAKE_PAGE#####' )).to eql(false)
       end
     end
   end
 
   describe '# API related Crowi attachments :' do
+
+    let(:attachment_name) { '添付ファイルテスト.txt' }
+    let(:attachment_body) { '添付ファイルテスト' }
+
     # Test for function to get attachment list
     it "get attachments list" do
       page_id = crowi_client.page_id(path_exp: test_page_path)
@@ -113,21 +117,34 @@ RSpec.describe Crowi::Client do
  
     # Test for function to add attachment
     it "add attachment" do
-      page_id = crowi_client.page_id(path_exp: test_page_path)
-      req = CPApiRequestAttachmentsAdd.new page_id: page_id,
-                                           file: File.new('LICENSE.txt')
-      expect(crowi_client.request(req).ok).to eq true
+
+      # 添付ディレクトリ配下にファイルを作成してから添付ファイルをアップロード
+      Dir.mktmpdir do |tmp_dir|
+        attachment_file_name = File.join(tmp_dir, attachment_name)
+
+        File.open(attachment_file_name, 'w') do |tmp_file|
+          tmp_file.binmode
+          tmp_file.write(attachment_body)
+        end
+
+        File.open(attachment_file_name, 'r') do |tmp_file|
+          page_id = crowi_client.page_id(path_exp: test_page_path)
+          req = CPApiRequestAttachmentsAdd.new page_id: page_id, file: tmp_file
+          expect(crowi_client.request(req).ok).to eq true
+        end
+      end
     end
   
     # Test for function to check attachment existence
     it "check attachment existence" do
-      expect(crowi_client.attachment_exist?(path_exp: test_page_path, attachment_name: 'LICENSE.txt')).to eql(true)
+      expect(crowi_client.attachment_exist?(path_exp: test_page_path, 
+                                            attachment_name: attachment_name)).to eql(true)
     end
  
     # Test for function to get attachment info
     it "get attachment info" do
-      a = crowi_client.attachment(path_exp: test_page_path, attachment_name: 'LICENSE.txt')
-      expect(a.originalName).to eq 'LICENSE.txt'
+      a = crowi_client.attachment(path_exp: test_page_path, attachment_name: attachment_name)
+      expect(a.originalName).to eq attachment_name
     end
 
     # Test for function to remove attachment file
