@@ -20,76 +20,75 @@ Or install it yourself as:
 
 ## Usage
 
-At first, you need to create setting file ```config/settings.yml``` in your application directory.
-And set token key of crowi API, and URL of crowi (ex. http://localhost:3000) in ```settings.yml```.
+Export these environments.
 
-```YAML
-# Example of config/settings.yml. YOU NEED TO REPLACE token!!!
-token: xEKAueUZDrQlr30iFZr96ti3GUd8sqP/pTkS3DGrwcc=
-url: http://localhost:3000/
 ```
-
-Then, you can use crowi client with ```require 'crowi-client'```.
+export CROWI_ACCESS_TOKEN=0123456789abcdef0123456789abcdef0123456789ab
+export CROWI_URL=http://localhost:3000/
+```
 
 ```ruby
 require 'crowi-client'
-puts CrowiClient.instance.page_exist?( path_exp: '/' )
-puts CrowiClient.instance.attachment_exist?( path_exp: '/', attachment_name: 'LICENSE.txt' )
+
+crowi_client = CrowiClient.new(crowi_url: ENV['CROWI_URL'], access_token: ENV['CROWI_ACCESS_TOKEN'])
+
+puts crowi_client.page_exist?( path_exp: '/' )
+puts crowi_client.attachment_exist?( path_exp: '/', attachment_name: 'LICENSE.txt' )
 ```
 
 ## Examples
 
 ```ruby
 # get page's ID
-puts CrowiClient.instance.page_id( path_exp: '/' )
+puts crowi_client.page_id( path_exp: '/' )
 ```
 
 ```ruby
 # Check existence of page by page path (you can use regular expression)
-CrowiClient.instance.page_exist?( path_exp: '/' )
+crowi_client.page_exist?( path_exp: '/' )
 ```
 
 ```ruby
 # Check existence of attachment by file name of attachment
-CrowiClient.instance.attachment_exist?( path_exp: '/', attachment_name: 'LICENSE.txt' )
+crowi_client.attachment_exist?( path_exp: '/', attachment_name: 'LICENSE.txt' )
 ```
 
 ```ruby
 # get attachment's ID
-puts CrowiClient.instance.attachment_id( path_exp: '/', attachment_name: 'LICENSE.txt' )
+puts crowi_client.attachment_id( path_exp: '/', attachment_name: 'LICENSE.txt' )
 ```
 
 ```ruby
 # get attachment (return data is object of CrowiAttachment)
-puts CrowiClient.instance.attachment( path_exp: '/', attachment_name: 'LICENSE.txt' )
+puts crowi_client.attachment( path_exp: '/', attachment_name: 'LICENSE.txt' )
 ```
 
 ```ruby
 # pages list
 req = CPApiRequestPagesList.new path_exp: '/'
-puts CrowiClient.instance.request(req)
+puts crowi_client.request(req)
 ```
 
 ```ruby
 # pages get - path_exp
 req = CPApiRequestPagesList.new path_exp: '/'
-puts CrowiClient.instance.request(req)
+puts crowi_client.request(req)
 ```
 
 ```ruby
 # pages get - page_id
-req = CPApiRequestPagesGet.new page_id: CrowiClient.instance.page_id(path: '/')
-puts CrowiClient.instance.request(req)
+req = CPApiRequestPagesGet.new page_id: crowi_client.page_id(path_exp: '/')
+puts crowi_client.request(req)
 ```
 
 ```ruby
 # pages get - revision_id
 reqtmp = CPApiRequestPagesList.new path_exp: '/'
-ret = CrowiClient.instance.request(reqtmp)
+ret = crowi_client.request(reqtmp)
 path = ret.data[0].path
 revision_id = ret.data[0].revision._id
 req = CPApiRequestPagesGet.new path: path, revision_id: revision_id
-puts CrowiClient.instance.request(req)
+puts crowi_client.request(req)
 ```
 
 ```ruby
@@ -98,7 +97,7 @@ test_page_path = '/tmp/crowi-client test page'
 body = "# crowi-client\n"
 req = CPApiRequestPagesCreate.new path: test_page_path,
         body: body
-puts CrowiClient.instance.request(req)
+puts crowi_client.request(req)
 ```
 
 ```ruby
@@ -106,74 +105,74 @@ puts CrowiClient.instance.request(req)
 test_page_path = '/tmp/crowi-client test page'
 test_cases = [nil, CrowiPage::GRANT_PUBLIC, CrowiPage::GRANT_RESTRICTED,
               CrowiPage::GRANT_SPECIFIED, CrowiPage::GRANT_OWNER]
-page_id = CrowiClient.instance.page_id(path: test_page_path)
+page_id = crowi_client.page_id(path_exp: test_page_path)
 
 body = "# crowi-client\n"
 test_cases.each do |grant|
   body = body + grant.to_s
   req = CPApiRequestPagesUpdate.new page_id: page_id,
           body: body, grant: grant
-  puts CrowiClient.instance.request(req)
+  puts crowi_client.request(req)
 end
 ```
 
 ```ruby
 # pages seen
-page_id = CrowiClient.instance.page_id(path: '/')
+page_id = crowi_client.page_id(path_exp: '/')
 req = CPApiRequestPagesSeen.new page_id: page_id
-puts CrowiClient.instance.request(req)
+puts crowi_client.request(req)
 ```
 
 ```ruby
 # likes add
 test_page_path = '/tmp/crowi-client test page'
-page_id = CrowiClient.instance.page_id(path: test_page_path)
+page_id = crowi_client.page_id(path_exp: test_page_path)
 req = CPApiRequestLikesAdd.new page_id: page_id
-puts CrowiClient.instance.request(req)
+puts crowi_client.request(req)
 ```
 
 ```ruby
 # likes remove
 test_page_path = '/tmp/crowi-client test page'
-page_id = CrowiClient.instance.page_id(path: test_page_path)
+page_id = crowi_client.page_id(path_exp: test_page_path)
 req = CPApiRequestLikesRemove.new page_id: page_id
-puts CrowiClient.instance.request(req)
+puts crowi_client.request(req)
 ```
 
 ```ruby
 # update post
 test_page_path = '/tmp/crowi-client test page'
 req = CPApiRequestPagesUpdatePost.new path: test_page_path
-puts CrowiClient.instance.request(req)
+puts crowi_client.request(req)
 ```
 
 
 ```ruby
 # attachments list
 test_page_path = '/tmp/crowi-client test page'
-page_id = CrowiClient.instance.page_id(path: test_page_path)
+page_id = crowi_client.page_id(path_exp: test_page_path)
 req = CPApiRequestAttachmentsList.new page_id: page_id
-puts CrowiClient.instance.request(req)
+puts crowi_client.request(req)
 ```
 
 ```ruby
 # attachments add
 test_page_path = '/tmp/crowi-client test page'
-page_id = CrowiClient.instance.page_id(path: test_page_path)
+page_id = crowi_client.page_id(path_exp: test_page_path)
 req = CPApiRequestAttachmentsAdd.new page_id: page_id,
                                      file: File.new('LICENSE.txt')
-puts CrowiClient.instance.request(req)
+puts crowi_client.request(req)
 ```
 
 ```ruby
 # attachments remove
 test_page_path = '/tmp/crowi-client test page'
-page_id = CrowiClient.instance.page_id(path: test_page_path)
+page_id = crowi_client.page_id(path_exp: test_page_path)
 reqtmp = CPApiRequestAttachmentsList.new page_id: page_id
-ret = CrowiClient.instance.request(reqtmp)
+ret = crowi_client.request(reqtmp)
 attachment_id = ret.data[0]._id
 req = CPApiRequestAttachmentsRemove.new attachment_id: attachment_id
-puts CrowiClient.instance.request(req)
+puts crowi_client.request(req)
 ```
 
 ## Development
