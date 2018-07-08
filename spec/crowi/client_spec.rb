@@ -4,11 +4,9 @@ RSpec.describe Crowi::Client do
 
   # Page path for test
   # @note Test page is not removed after test because removing page is not permitted throw API.
-  let(:test_page_path)                   { '/tmp/crowi-client test page'  }
-  let(:test_page_path_extend_for_create) { '/tmp/crowi-client(test page)' }
-  let(:test_page_path_extend_for_get)    { '/tmp/crowi-client\(test page\)' }
-  let(:crowi_client)                     { CrowiClient.new(crowi_url: ENV['CROWI_URL'],
-                                                           access_token: ENV['CROWI_ACCESS_TOKEN']) }
+  let(:test_page_path) { '/tmp/crowi-client test page'  }
+  let(:crowi_client)   { CrowiClient.new(crowi_url: ENV['CROWI_URL'],
+                                         access_token: ENV['CROWI_ACCESS_TOKEN']) }
 
   describe '# CrowiClient\'s basic attributes and methods :' do
     # Test for VERSION
@@ -140,26 +138,6 @@ RSpec.describe Crowi::Client do
       attachment_id = ret.data[0]._id
       req = CPApiRequestAttachmentsRemove.new attachment_id: attachment_id
       expect(crowi_client.request(req).ok).to eq true
-    end
-  end
-
-  describe '# Extended function related Crowi pages:' do
-    # create test_page_path_extend before execute get_id.
-    before do
-      body = "# crowi-client\n"
-      req = CPApiRequestPagesCreate.new path: test_page_path_extend_for_create, body: body
-      crowi_client.request(req)
-    end
-
-    # Test for function to get page
-    # @todo Assure page existence.
-    #       (ex. path test_page_path(_extend) is not promises existence.)
-    it "execute page_id" do
-      # get page_id 
-      aggregate_failures 'some pattern to get page' do
-        expect(crowi_client.page_id(path_exp: test_page_path)).to_not eq nil
-        expect(crowi_client.page_id(path_exp: test_page_path_extend_for_get)).to_not eq nil
-      end
     end
   end
 end
