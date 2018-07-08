@@ -1,6 +1,7 @@
 require 'rest-client'
 require 'json'
 require 'yaml'
+require 'uri'
 
 require 'crowi/client/apireq/api_request_pages'
 require 'crowi/client/apireq/api_request_attachments'
@@ -31,7 +32,8 @@ class CrowiClient
   # @return [String] ページID
   def page_id(path_exp: nil)
     ret = request(CPApiRequestPagesList.new path_exp: path_exp)
-    return ret&.data&.find { |p| p.path.match(path_exp) != nil }&.id
+    return nil if (ret.kind_of? CPInvalidRequest || ret.data.nil?)
+    return ret.data.find { |page| URI.unescape(page.path) == path_exp }&.id
   end
 
   # ページが存在するか調べる
