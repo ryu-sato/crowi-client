@@ -1,28 +1,28 @@
-require 'singleton'
 require 'rest-client'
 require 'json'
 require 'yaml'
-require "easy_settings"
 
 require 'crowi/client/apireq/api_request_pages'
 require 'crowi/client/apireq/api_request_attachments'
 
 # Crowi のクライアントクラス
 class CrowiClient
-  include Singleton
 
-  # コンストラクタ（シングルトン）
-  def initialize
-    raise ArgumentError, 'Config url is required.'   unless EasySettings['url']
-    raise ArgumentError, 'Config token is required.' unless EasySettings['token']
-    @cp_entry_point = URI.join(EasySettings['url'], '/_api/').to_s
+  # コンストラクタ
+  def initialize(crowi_url: '', access_token: '')
+    raise ArgumentError, 'Config `crowi_url` is required.'    if crowi_url.empty?
+    raise ArgumentError, 'Config `access_token` is required.' if access_token.empty?
+
+    @crowi_url = crowi_url
+    @access_toke = access_token
+    @cp_entry_point = URI.join(crowi_url, '/_api/').to_s
   end
 
   # APIリクエストを送信する
   # @param [ApiRequestBase] req APIリクエスト
   # @return [String] APIリクエストの応答（JSON形式）
   def request(req)
-    req.param[:access_token] = EasySettings['token'] 
+    req.param[:access_token] = @access_toke
     return req.execute URI.join(@cp_entry_point, req.entry_point).to_s
   end
 
