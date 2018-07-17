@@ -11,6 +11,12 @@ build:
     steps:
         - bundle-install
 
+        - script:
+            name: "Install utility tools"
+            code: |
+              apt-get update
+              apt-get install -y netcat
+
         - script: 
             name: "Wait for MongoDB connection" 
             code: | 
