@@ -21,15 +21,15 @@ build:
         - script: 
             name: "Wait for MongoDB connection" 
             code: | 
-              echo $MONGO_ENV_MONGO_MAJOR
-              echo $MONGO_PORT
-              echo $MONGO_ENV_MONGO_VERSION
-              echo $MONGO_PORT_27017_TCP
-              echo $MONGO_PORT_27017_TCP_PROTO
-              echo $MONGO_PORT_27017_TCP_ADDR
-              echo $MONGO_NAME
-              echo $MONGO_PORT_27017_TCP_PORT
-              while ! nc -q 1 mongo $MONGO_PORT
+              echo MONGO_ENV_MONGO_MAJOR $MONGO_ENV_MONGO_MAJOR
+              echo MONGO_PORT $MONGO_PORT
+              echo MONGO_ENV_MONGO_VERSION $MONGO_ENV_MONGO_VERSION
+              echo MONGO_PORT_27017_TCP $MONGO_PORT_27017_TCP
+              echo MONGO_PORT_27017_TCP_PROTO $MONGO_PORT_27017_TCP_PROTO
+              echo MONGO_PORT_27017_TCP_ADDR $MONGO_PORT_27017_TCP_ADDR
+              echo MONGO_NAME $MONGO_NAME
+              echo MONGO_PORT_27017_TCP_PORT $MONGO_PORT_27017_TCP_PORT
+              while ! nc -q 1 mongo $MONGO_PORT_27017_TCP_PORT
               < /dev/null; do sleep 3; done
 
         - internal/docker-run:
@@ -37,7 +37,7 @@ build:
             name: growi
             ports: 3000
             env:
-              - "MONGO_URI=mongodb://mongo:$MONGO_PORT_27017_TCP/growi"
+              - "MONGO_URI=mongodb://mongo:$MONGO_PORT_27017_TCP_PORT/growi"
               - "PASSWORD_SEED=empty"
 
         - script:
