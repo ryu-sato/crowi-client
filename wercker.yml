@@ -2,7 +2,7 @@ box: ruby:2.5.1
 
 # Run weseek/growi, mongo, elasticsearch
 services:
-  - mongo:3.4
+  - id: mongo:3.4
 
 build:
     # Steps make up the actions in your pipeline
