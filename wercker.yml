@@ -1,27 +1,59 @@
-# This references the default Ruby container from
-# the Docker Hub.
-# https://registry.hub.docker.com/_/ruby/
-# If you want to use a specific version you would use a tag:
-# ruby:2.2.2
-box: ruby
-# You can also use services such as databases. Read more on our dev center:
-# http://devcenter.wercker.com/docs/services/index.html
-# services:
-    # - postgres
-    # http://devcenter.wercker.com/docs/services/postgresql.html
+box: ruby:2.5.1
 
-    # - mongo
-    # http://devcenter.wercker.com/docs/services/mongodb.html
+# Run weseek/growi, mongo, elasticsearch
+services:
+  - mongo:3.4
 
-# This is the build pipeline. Pipelines are the core of wercker
-# Read more about pipelines on our dev center
-# http://devcenter.wercker.com/docs/pipelines/index.html
 build:
     # Steps make up the actions in your pipeline
     # Read more about steps on our dev center:
     # http://devcenter.wercker.com/docs/steps/index.html
     steps:
         - bundle-install
+
+        - script: 
+            name: "Wait for MongoDB connection" 
+            code: | 
+              while ! nc -q 1 $MONGODB_PORT_27017_TCP_ADDR $MONGODB_PORT_27017_TCP_PORT
+              < /dev/null; do sleep 3; done
+
+        - internal/docker-run:
+            image: weseek/growi:3.1.12
+            name: growi
+            ports: 3000
+            env:
+              - "MONGO_URI=mongodb://$MONGODB_PORT_27017_TCP_ADDR:$MONGODB_PORT_27017_TCP_PORT/growi"
+              - "PASSWORD_SEED=empty"
+
+        - script:
+            name: "Create admin user"
+            code: |
+              curl http://growi:3000/installer -c login.cookie -o installer.html
+              CSRF=`grep data-csrftoken installer.html | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
+              curl http://growi:3000/installer/createAdmin -b login.cookie -X POST -d "registerForm[name]=admin1&registerForm[username]=admin1&registerForm[email]=admin1@localhost&registerForm[password]=admin1pass&_csrf=${CSRF}"
+
+        - script:
+            name: "Login as admin1"
+            code: |
+              curl http://growi:3000/login -c login.cookie -o login.html
+              CSRF=`grep data-csrftoken login.html | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
+              curl http://growi:3000/login -b login.cookie -X POST -d "loginForm[username]=admin1&loginForm[password]=admin1pass&_csrf=${CSRF}"
+
+        - script:
+            name: "Generate access token"
+            code: |
+              curl http://growi:3000/me/apiToken -b login.cookie -o apiToken.html
+              CSRF=`grep data-csrftoken apiToken.html | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
+              curl http://growi:3000/me/apiToken -b login.cookie -X POST -d "apiTokenForm[confirm]=1&_csrf=${CSRF}"
+              curl http://growi:3000/me/apiToken -b login.cookie -o apiToken.html
+              export APITOKEN=`grep -A 10 'Current API Token' apiToken.html | grep '<input' | awk -F'value=' '{ print $2 }' | sed -e s/\"//g`
+
+        - script:
+            name: "Export environment values"
+            code: |
+              export CROWI_URL=http://growi:3000/
+              export CROWI_ACCESS_TOKEN=$APITOKEN
+
         - script:
             name: rspec
             code: bundle exec rspec
