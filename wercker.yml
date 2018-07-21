@@ -72,7 +72,7 @@ build:
               CSRF=`grep data-csrftoken apiToken.html | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
               curl http://growi:3000/me/apiToken -b login.cookie -X POST -d "apiTokenForm[confirm]=1&_csrf=${CSRF}"
               curl http://growi:3000/me/apiToken -b login.cookie -o apiToken.html
-              export APITOKEN=`grep -A 10 'Current API Token' apiToken.html | grep '<input' | awk -F'value=' '{ print $2 }' | sed -e s/\"//g`
+              export APITOKEN=`grep -A 10 'Current API Token' apiToken.html | grep '<input' | awk -F'value=' '{ print $2 }' | awk -F'"' '{ print $2 }'`
 
         - script:
             name: "Export environment values"
