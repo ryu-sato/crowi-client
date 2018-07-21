@@ -27,8 +27,9 @@ build:
             name: "Wait for MongoDB connection" 
             code: | 
               echo Wait for connect to $MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT
-              while ! nc -q 1 $MONGO_PORT_27017_TCP_ADDR $MONGO_PORT_27017_TCP_PORT
-              < /dev/null; do echo "...waiting 3s"; sleep 3; done
+              while ! nc -q 1 $MONGO_PORT_27017_TCP_ADDR $MONGO_PORT_27017_TCP_PORT </dev/null; do
+                echo "...waiting 3s"; sleep 3;
+              done
 
         - internal/docker-run:
             image: weseek/growi:3.1.12
