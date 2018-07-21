@@ -13,6 +13,11 @@ build:
         - bundle-install
 
         - script:
+            name: "View Environment"
+            code: |
+              env
+
+        - script:
             name: "Install utility tools"
             code: |
               apt-get update
