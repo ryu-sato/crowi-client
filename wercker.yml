@@ -13,11 +13,6 @@ build:
         - bundle-install
 
         - script:
-            name: "View Environment"
-            code: |
-              env
-
-        - script:
             name: "Install utility tools"
             code: |
               apt-get update
@@ -39,11 +34,6 @@ build:
               PASSWORD_SEED=empty
               FILE_UPLOAD=local
 
-        - script:
-            name: "View Environment"
-            code: |
-              env
-
         - script: 
             name: "Wait for GROWI connection" 
             code: | 
@@ -51,37 +41,48 @@ build:
               while ! nc -q 1 growi 3000 < /dev/null; do
                 echo "...waiting 3s"; sleep 3;
               done
+              export GROWI_URL=http://growi:3000
 
         - script:
             name: "Create admin user"
             code: |
-              curl http://growi:3000/installer -c login.cookie -o installer.html
-              CSRF=`grep data-csrftoken installer.html | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
-              curl http://growi:3000/installer/createAdmin -b login.cookie -X POST -d "registerForm[name]=admin1&registerForm[username]=admin1&registerForm[email]=admin1@localhost&registerForm[password]=admin1pass&_csrf=${CSRF}"
+              export ADMIN_USER_NAME=admin1
+              export ADMIN_USER_PASS=admin1pass
+              LOGIN_COOKIE=login.cookie
+              OUTPUT_PAGE_NAME=installer.html
+              curl $GROWI_URL/installer -c ${LOGIN_COOKIE} -o ${OUTPUT_PAGE_NAME}
+              CSRF=`grep data-csrftoken ${OUTPUT_PAGE_NAME} | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
+              curl $GROWI_URL/installer/createAdmin -b ${LOGIN_COOKIE} -X POST \
+                -d "registerForm[name]=${ADMIN_USER_NAME}&registerForm[username]=${ADMIN_USER_NAME}&registerForm[email]=${ADMIN_USER_NAME}@localhost&registerForm[password]=${ADMIN_USER_PASS}&_csrf=${CSRF}"
 
         - script:
             name: "Login as admin1"
             code: |
-              curl http://growi:3000/login -c login.cookie -o login.html
-              CSRF=`grep data-csrftoken login.html | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
-              curl http://growi:3000/login -b login.cookie -X POST -d "loginForm[username]=admin1&loginForm[password]=admin1pass&_csrf=${CSRF}"
+              OUTPUT_PAGE_NAME=login.html
+              curl $GROWI_URL/login -c ${LOGIN_COOKIE} -o ${OUTPUT_PAGE_NAME}
+              CSRF=`grep data-csrftoken ${OUTPUT_PAGE_NAME} | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
+              curl $GROWI_URL/login -b ${LOGIN_COOKIE} -X POST -d "loginForm[username]=${ADMIN_USER_NAME}&loginForm[password]=${ADMIN_USER_PASS}&_csrf=${CSRF}"
 
         - script:
-            name: "Generate access token"
+            name: "Generate API token"
             code: |
-              curl http://growi:3000/me/apiToken -b login.cookie -o apiToken.html
-              CSRF=`grep data-csrftoken apiToken.html | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
-              curl http://growi:3000/me/apiToken -b login.cookie -X POST -d "apiTokenForm[confirm]=1&_csrf=${CSRF}"
-              curl http://growi:3000/me/apiToken -b login.cookie -o apiToken.html
-              export APITOKEN=`grep -A 10 'Current API Token' apiToken.html | grep '<input' | awk -F'value=' '{ print $2 }' | awk -F'"' '{ print $2 }'`
+              OUTPUT_PAGE_NAME=apiToken.html
+              curl $GROWI_URL/me/apiToken -b ${LOGIN_COOKIE} -o ${OUTPUT_PAGE_NAME}
+              CSRF=`grep data-csrftoken ${OUTPUT_PAGE_NAME} | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
+              curl $GROWI_URL/me/apiToken -b ${LOGIN_COOKIE} -X POST -d "apiTokenForm[confirm]=1&_csrf=${CSRF}"
+              curl $GROWI_URL/me/apiToken -b ${LOGIN_COOKIE} -o ${OUTPUT_PAGE_NAME}
+              export APITOKEN=`grep -A 10 'Current API Token' ${OUTPUT_PAGE_NAME} | grep '<input' | awk -F'value=' '{ print $2 }' | awk -F'"' '{ print $2 }'`
 
         - script:
-            name: "Export environment values"
+            name: "Export environment variables"
             code: |
-              export CROWI_URL=http://growi:3000/
+              export CROWI_URL=$GROWI_URL
               export CROWI_ACCESS_TOKEN=$APITOKEN
-              echo CROWI_URL=http://growi:3000/
-              echo CROWI_ACCESS_TOKEN=$APITOKEN
+
+        - script:
+            name: "View environment variables"
+            code: |
+              env
 
         - script:
             name: rspec
