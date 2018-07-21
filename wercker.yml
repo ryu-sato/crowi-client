@@ -26,7 +26,8 @@ build:
         - script: 
             name: "Wait for MongoDB connection" 
             code: | 
-              while ! nc -q 1 mongo 27017
+              echo Wait for connect to $MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT
+              while ! nc -q 1 $MONGO_PORT_27017_TCP_ADDR $MONGO_PORT_27017_TCP_PORT
               < /dev/null; do echo "...waiting 3s"; sleep 3; done
 
         - internal/docker-run:
