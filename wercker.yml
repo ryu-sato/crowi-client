@@ -1,0 +1,89 @@
+box: ruby:2.5.1
+
+# Run weseek/growi, mongo, elasticsearch
+services:
+  - name: mongo
+    id: mongo:3.4
+
+build:
+    # Steps make up the actions in your pipeline
+    # Read more about steps on our dev center:
+    # http://devcenter.wercker.com/docs/steps/index.html
+    steps:
+        - bundle-install
+
+        - script:
+            name: "Install utility tools"
+            code: |
+              apt-get update
+              apt-get install -y netcat
+
+        - script: 
+            name: "Wait for MongoDB connection" 
+            code: | 
+              echo Wait for connect to $MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT
+              while ! nc -q 1 $MONGO_PORT_27017_TCP_ADDR $MONGO_PORT_27017_TCP_PORT </dev/null; do
+                echo "...waiting 3s"; sleep 3;
+              done
+
+        - internal/docker-run:
+            image: weseek/growi:3.1.12
+            name: growi
+            env: >
+              MONGO_URI=mongodb://$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/growi
+              PASSWORD_SEED=empty
+              FILE_UPLOAD=local
+
+        - script: 
+            name: "Wait for GROWI connection" 
+            code: | 
+              echo Wait for connect to growi:3000
+              while ! nc -q 1 growi 3000 < /dev/null; do
+                echo "...waiting 3s"; sleep 3;
+              done
+              export GROWI_URL=http://growi:3000
+
+        - script:
+            name: "Create admin user"
+            code: |
+              export ADMIN_USER_NAME=admin1
+              export ADMIN_USER_PASS=admin1pass
+              LOGIN_COOKIE=login.cookie
+              OUTPUT_PAGE_NAME=installer.html
+              curl $GROWI_URL/installer -c ${LOGIN_COOKIE} -o ${OUTPUT_PAGE_NAME}
+              CSRF=`grep data-csrftoken ${OUTPUT_PAGE_NAME} | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
+              curl $GROWI_URL/installer/createAdmin -b ${LOGIN_COOKIE} -X POST \
+                -d "registerForm[name]=${ADMIN_USER_NAME}&registerForm[username]=${ADMIN_USER_NAME}&registerForm[email]=${ADMIN_USER_NAME}@localhost&registerForm[password]=${ADMIN_USER_PASS}&_csrf=${CSRF}"
+
+        - script:
+            name: "Login as admin1"
+            code: |
+              OUTPUT_PAGE_NAME=login.html
+              curl $GROWI_URL/login -c ${LOGIN_COOKIE} -o ${OUTPUT_PAGE_NAME}
+              CSRF=`grep data-csrftoken ${OUTPUT_PAGE_NAME} | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
+              curl $GROWI_URL/login -b ${LOGIN_COOKIE} -X POST -d "loginForm[username]=${ADMIN_USER_NAME}&loginForm[password]=${ADMIN_USER_PASS}&_csrf=${CSRF}"
+
+        - script:
+            name: "Generate API token"
+            code: |
+              OUTPUT_PAGE_NAME=apiToken.html
+              curl $GROWI_URL/me/apiToken -b ${LOGIN_COOKIE} -o ${OUTPUT_PAGE_NAME}
+              CSRF=`grep data-csrftoken ${OUTPUT_PAGE_NAME} | awk -F'=' '{ print $2 }' | sed -e s/\"//g`
+              curl $GROWI_URL/me/apiToken -b ${LOGIN_COOKIE} -X POST -d "apiTokenForm[confirm]=1&_csrf=${CSRF}"
+              curl $GROWI_URL/me/apiToken -b ${LOGIN_COOKIE} -o ${OUTPUT_PAGE_NAME}
+              export APITOKEN=`grep -A 10 'Current API Token' ${OUTPUT_PAGE_NAME} | grep '<input' | awk -F'value=' '{ print $2 }' | awk -F'"' '{ print $2 }'`
+
+        - script:
+            name: "Export environment variables"
+            code: |
+              export CROWI_URL=$GROWI_URL
+              export CROWI_ACCESS_TOKEN=$APITOKEN
+
+        - script:
+            name: "View environment variables"
+            code: |
+              env
+
+        - script:
+            name: rspec
+            code: bundle exec rspec
