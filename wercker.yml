@@ -79,6 +79,8 @@ build:
             code: |
               export CROWI_URL=http://growi:3000/
               export CROWI_ACCESS_TOKEN=$APITOKEN
+              echo CROWI_URL=http://growi:3000/
+              echo CROWI_ACCESS_TOKEN=$APITOKEN
 
         - script:
             name: rspec
