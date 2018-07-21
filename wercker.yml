@@ -42,8 +42,10 @@ build:
         - script: 
             name: "Wait for GROWI connection" 
             code: | 
-              while ! nc -q 1 growi 3000
-              < /dev/null; do echo "...waiting 3s"; sleep 3; done
+              echo Wait for connect to growi:3000
+              while ! nc -q 1 growi 3000 < /dev/null; do
+                echo "...waiting 3s"; sleep 3;
+              done
 
         - script:
             name: "Create admin user"
