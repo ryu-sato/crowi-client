@@ -37,6 +37,7 @@ build:
             env: >
               MONGO_URI=mongodb://$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/growi
               PASSWORD_SEED=empty
+              FILE_UPLOAD=local
 
         - script:
             name: "View Environment"
