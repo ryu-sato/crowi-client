@@ -1,3 +1,5 @@
+[![wercker status](https://app.wercker.com/status/8d49d851e9cdf0c7e1b7c840cc2fe6ad/s/master "wercker status")](https://app.wercker.com/project/byKey/8d49d851e9cdf0c7e1b7c840cc2fe6ad)
+
 # crowi-client -- client of crowi with use API
 
 A client of crowi with use API.
