@@ -16,14 +16,16 @@ class CPApiRequestPagesList < CPApiRequestBase
   # リクエストを実行する
   # @override
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
+  # @param  [Hash] rest_client_param RestClientのパラメータ
   # @return [Array] リクエスト実行結果
-  def execute(entry_point)
+  def execute(entry_point, rest_client_param: {})
 
     if invalid?
       return validation_msg
     end
 
-    ret = JSON.parse RestClient.get entry_point, params: @param
+    param = { method: :get, url: entry_point, headers: { params: @param } }.merge(rest_client_param)
+    ret = JSON.parse RestClient::Request.execute param
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
     end
@@ -41,7 +43,10 @@ protected
   # @return [nil/CPInvalidRequest] バリデーションエラー結果
   def _invalid
     if ! (@param[:path] || @param[:user])
-      return CPInvalidRequest.new 'Parameter path or page_id is required.'
+      return CPInvalidRequest.new 'Parameter path or user is required.'
+    end
+    if (@param[:path] && @param[:user])
+      return CPInvalidRequest.new 'Parameter path and user can not be specified both.'
     end
   end
 

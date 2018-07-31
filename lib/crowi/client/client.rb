@@ -10,12 +10,13 @@ require 'crowi/client/apireq/api_request_attachments'
 class CrowiClient
 
   # コンストラクタ
-  def initialize(crowi_url: '', access_token: '')
+  def initialize(crowi_url: '', access_token: '', rest_client_param: {})
     raise ArgumentError, 'Config `crowi_url` is required.'    if crowi_url.empty?
     raise ArgumentError, 'Config `access_token` is required.' if access_token.empty?
 
     @crowi_url = crowi_url
-    @access_toke = access_token
+    @access_token = access_token
+    @rest_client_param = rest_client_param
     @cp_entry_point = URI.join(crowi_url, '/_api/').to_s
   end
 
@@ -23,8 +24,9 @@ class CrowiClient
   # @param [ApiRequestBase] req APIリクエスト
   # @return [String] APIリクエストの応答（JSON形式）
   def request(req)
-    req.param[:access_token] = @access_toke
-    return req.execute URI.join(@cp_entry_point, req.entry_point).to_s
+    req.param[:access_token] = @access_token
+    return req.execute URI.join(@cp_entry_point, req.entry_point).to_s,
+                       rest_client_param: @rest_client_param
   end
 
   # ページIDを取得する
@@ -56,17 +58,16 @@ class CrowiClient
   # @param  [String] path_exp ページパス（正規表現）
   # @return [String] attachment's file name
   def attachment_id(path_exp: nil, attachment_name: nil)
-      ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path_exp: path_exp))
-      return ret&.data&.find { |a| a.originalName == attachment_name }&._id
+    ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path_exp: path_exp))
+    return ret&.data&.find { |a| a.originalName == attachment_name }&._id
   end
 
   # 指定した添付ファイル情報を取得する
   # @param  [String] path_exp ページパス（正規表現）
   # @return [String] attachment's file name
   def attachment(path_exp: nil, attachment_name: nil)
-      ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path_exp: path_exp))
-      return ret&.data&.find { |a| a.originalName == attachment_name }
+    ret = request(CPApiRequestAttachmentsList.new page_id: page_id(path_exp: path_exp))
+    return ret&.data&.find { |a| a.originalName == attachment_name }
   end
 
 end
-
