@@ -115,8 +115,10 @@ class CPApiRequestAttachmentsRemove < CPApiRequestBase
     if invalid?
       return validation_msg
     end
-    params = { method: :post, url: entry_point, content_type: :json, accept: :json,
-               headers: { params: @param.to_json } }.merge(rest_client_param)
+    params = { method: :post, url: entry_point,
+               payload: @param.to_json,
+               headers: { content_type: :json, accept: :json }
+             }.merge(rest_client_param)
     ret = JSON.parse RestClient::Request.execute params
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
