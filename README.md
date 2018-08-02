@@ -34,15 +34,15 @@ require 'crowi-client'
 
 crowi_client = CrowiClient.new(crowi_url: ENV['CROWI_URL'], access_token: ENV['CROWI_ACCESS_TOKEN'])
 
-puts crowi_client.page_exist?( path_exp: '/' )
-puts crowi_client.attachment_exist?( path_exp: '/', attachment_name: 'LICENSE.txt' )
+p crowi_client.page_exist?( path_exp: '/' )
+p crowi_client.attachment_exist?( path_exp: '/', attachment_name: 'LICENSE.txt' )
 ```
 
 ## Examples
 
 ```ruby
 # get page's ID
-puts crowi_client.page_id( path_exp: '/' )
+p crowi_client.page_id( path_exp: '/' )
 ```
 
 ```ruby
@@ -57,30 +57,30 @@ crowi_client.attachment_exist?( path_exp: '/', attachment_name: 'LICENSE.txt' )
 
 ```ruby
 # get attachment's ID
-puts crowi_client.attachment_id( path_exp: '/', attachment_name: 'LICENSE.txt' )
+p crowi_client.attachment_id( path_exp: '/', attachment_name: 'LICENSE.txt' )
 ```
 
 ```ruby
 # get attachment (return data is object of CrowiAttachment)
-puts crowi_client.attachment( path_exp: '/', attachment_name: 'LICENSE.txt' )
+p crowi_client.attachment( path_exp: '/', attachment_name: 'LICENSE.txt' )
 ```
 
 ```ruby
 # pages list
 req = CPApiRequestPagesList.new path_exp: '/'
-puts crowi_client.request(req)
+p crowi_client.request(req)
 ```
 
 ```ruby
 # pages get - path_exp
 req = CPApiRequestPagesList.new path_exp: '/'
-puts crowi_client.request(req)
+p crowi_client.request(req)
 ```
 
 ```ruby
 # pages get - page_id
 req = CPApiRequestPagesGet.new page_id: crowi_client.page_id(path_exp: '/')
-puts crowi_client.request(req)
+p crowi_client.request(req)
 ```
 
 ```ruby
@@ -90,7 +90,7 @@ ret = crowi_client.request(reqtmp)
 path = ret.data[0].path
 revision_id = ret.data[0].revision._id
 req = CPApiRequestPagesGet.new path: path, revision_id: revision_id
-puts crowi_client.request(req)
+p crowi_client.request(req)
 ```
 
 ```ruby
@@ -99,7 +99,7 @@ test_page_path = '/tmp/crowi-client test page'
 body = "# crowi-client\n"
 req = CPApiRequestPagesCreate.new path: test_page_path,
         body: body
-puts crowi_client.request(req)
+p crowi_client.request(req)
 ```
 
 ```ruby
@@ -114,7 +114,7 @@ test_cases.each do |grant|
   body = body + grant.to_s
   req = CPApiRequestPagesUpdate.new page_id: page_id,
           body: body, grant: grant
-  puts crowi_client.request(req)
+  p crowi_client.request(req)
 end
 ```
 
@@ -122,7 +122,7 @@ end
 # pages seen
 page_id = crowi_client.page_id(path_exp: '/')
 req = CPApiRequestPagesSeen.new page_id: page_id
-puts crowi_client.request(req)
+p crowi_client.request(req)
 ```
 
 ```ruby
@@ -130,7 +130,7 @@ puts crowi_client.request(req)
 test_page_path = '/tmp/crowi-client test page'
 page_id = crowi_client.page_id(path_exp: test_page_path)
 req = CPApiRequestLikesAdd.new page_id: page_id
-puts crowi_client.request(req)
+p crowi_client.request(req)
 ```
 
 ```ruby
@@ -138,14 +138,14 @@ puts crowi_client.request(req)
 test_page_path = '/tmp/crowi-client test page'
 page_id = crowi_client.page_id(path_exp: test_page_path)
 req = CPApiRequestLikesRemove.new page_id: page_id
-puts crowi_client.request(req)
+p crowi_client.request(req)
 ```
 
 ```ruby
 # update post
 test_page_path = '/tmp/crowi-client test page'
 req = CPApiRequestPagesUpdatePost.new path: test_page_path
-puts crowi_client.request(req)
+p crowi_client.request(req)
 ```
 
 
@@ -154,7 +154,7 @@ puts crowi_client.request(req)
 test_page_path = '/tmp/crowi-client test page'
 page_id = crowi_client.page_id(path_exp: test_page_path)
 req = CPApiRequestAttachmentsList.new page_id: page_id
-puts crowi_client.request(req)
+p crowi_client.request(req)
 ```
 
 ```ruby
@@ -163,7 +163,7 @@ test_page_path = '/tmp/crowi-client test page'
 page_id = crowi_client.page_id(path_exp: test_page_path)
 req = CPApiRequestAttachmentsAdd.new page_id: page_id,
                                      file: File.new('LICENSE.txt')
-puts crowi_client.request(req)
+p crowi_client.request(req)
 ```
 
 ```ruby
@@ -174,7 +174,24 @@ reqtmp = CPApiRequestAttachmentsList.new page_id: page_id
 ret = crowi_client.request(reqtmp)
 attachment_id = ret.data[0]._id
 req = CPApiRequestAttachmentsRemove.new attachment_id: attachment_id
-puts crowi_client.request(req)
+p crowi_client.request(req)
+```
+
+### Basic Authentication
+
+```ruby
+require 'crowi-client'
+
+# Create crowiclient instance with username and password that is used by basic authentication
+crowi_client = CrowiClient.new(crowi_url: ENV['CROWI_URL'], access_token: ENV['CROWI_ACCESS_TOKEN'],
+                               rest_client_param: { user: 'who', password: 'bar'})
+
+# Check existence of page
+p crowi_client.page_exist?( path_exp: '/' ) ? '/ exist' : '/ not exist'
+
+# Create page whose path is '/tmp'
+req = CPApiRequestPagesCreate.new path: '/tmp', body: 'tmp'
+p crowi_client.request(req)
 ```
 
 ## Development
@@ -197,4 +214,4 @@ Everyone interacting in the Crowi::Client project’s codebases, issue trackers,
 
 ## ToDo
 
-- [ ] Support crowi with basic Authentication
+- [x] Support crowi with basic Authentication

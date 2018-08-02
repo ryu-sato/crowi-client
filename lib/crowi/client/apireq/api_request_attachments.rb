@@ -14,12 +14,14 @@ class CPApiRequestAttachmentsList < CPApiRequestBase
   # リクエストを実行する
   # @override
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
-  # @return [CrowiPage] リクエスト実行結果
-  def execute(entry_point)
+  # @param  [Hash] rest_client_param RestClientのパラメータ
+  # @return [Array] リクエスト実行結果
+  def execute(entry_point, rest_client_param: {})
     if invalid?
       return validation_msg
     end
-    ret = JSON.parse RestClient.get entry_point, params: @param
+    params = { method: :get, url: entry_point, headers: { params: @param } }.merge(rest_client_param)
+    ret = JSON.parse RestClient::Request.execute params
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
     end
@@ -57,12 +59,13 @@ class CPApiRequestAttachmentsAdd < CPApiRequestBase
   # リクエストを実行する
   # @override
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
-  # @return [String] リクエスト実行結果（JSON形式）
-  def execute(entry_point)
+  # @param  [Hash] rest_client_param RestClientのパラメータ
+  # @return [Array] リクエスト実行結果
+  def execute(entry_point, rest_client_param: {})
     if invalid?
       return validation_msg
     end
-    req = RestClient::Request.new(
+    params = {
       method: :post,
       url:    entry_point,
       payload: {
@@ -70,8 +73,8 @@ class CPApiRequestAttachmentsAdd < CPApiRequestBase
         page_id:      @param[:page_id],
         file:         @param[:file]
       }
-    )
-    ret = JSON.parse req.execute
+    }.merge(rest_client_param)
+    ret = JSON.parse RestClient::Request.execute params
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
     end
@@ -103,17 +106,20 @@ class CPApiRequestAttachmentsRemove < CPApiRequestBase
           { attachment_id: param[:attachment_id] })
   end
 
-
   # リクエストを実行する
   # @override
   # @param  [String] entry_point APIのエントリーポイントとなるURL（ex. http://localhost:3000/_api/pages.list）
-  # @return [CrowiPage] リクエスト実行結果
-  def execute(entry_point)
+  # @param  [Hash] rest_client_param RestClientのパラメータ
+  # @return [Array] リクエスト実行結果
+  def execute(entry_point, rest_client_param: {})
     if invalid?
       return validation_msg
     end
-    ret = JSON.parse RestClient.post entry_point, @param.to_json,
-                          { content_type: :json, accept: :json }
+    params = { method: :post, url: entry_point,
+               payload: @param.to_json,
+               headers: { content_type: :json, accept: :json }
+             }.merge(rest_client_param)
+    ret = JSON.parse RestClient::Request.execute params
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
     end
