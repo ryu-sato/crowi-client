@@ -122,7 +122,7 @@ class CPApiRequestPagesCreate < CPApiRequestBase
     end
 
     params = { method: :post, url: entry_point, content_type: :json, accept: :json,
-               headers: { params: @param.to_json } }.merge()
+               headers: { params: @param.to_json } }.merge(rest_client_param)
     ret = JSON.parse RestClient::Request.execute params
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
@@ -167,7 +167,7 @@ class CPApiRequestPagesUpdate < CPApiRequestBase
       return validation_msg
     end
     params = { method: :post, url: entry_point, content_type: :json, accept: :json,
-               headers: { params: @param.to_json } }.merge()
+               headers: { params: @param.to_json } }.merge(rest_client_param)
     ret = JSON.parse RestClient::Request.execute params
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
@@ -211,7 +211,7 @@ class CPApiRequestPagesSeen < CPApiRequestBase
       return validation_msg
     end
     params = { method: :post, url: entry_point, content_type: :json, accept: :json,
-               headers: { params: @param.to_json } }.merge()
+               headers: { params: @param.to_json } }.merge(rest_client_param)
     ret = JSON.parse RestClient::Request.execute params
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
@@ -254,7 +254,7 @@ class CPApiRequestLikesAdd < CPApiRequestBase
       return validation_msg
     end
     params = { method: :post, url: entry_point, content_type: :json, accept: :json,
-               headers: { params: @param.to_json } }.merge()
+               headers: { params: @param.to_json } }.merge(rest_client_param)
     ret = JSON.parse RestClient::Request.execute params
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
@@ -297,7 +297,7 @@ class CPApiRequestLikesRemove < CPApiRequestBase
       return validation_msg
     end
     params = { method: :post, url: entry_point, content_type: :json, accept: :json,
-               headers: { params: @param.to_json } }.merge()
+               headers: { params: @param.to_json } }.merge(rest_client_param)
     ret = JSON.parse RestClient::Request.execute params
     if (ret['ok'] == false)
       return CPInvalidRequest.new "API return false with msg: #{ret['msg']}"
